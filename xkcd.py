@@ -1,11 +1,17 @@
 import requests
 import sys
 import os
+import argparse
+import random
+
+# At the time of writing this script, this is the count.
+xkcd_comic_count = 2266
 
 xkcd_url = "https://xkcd.com/info.0.json"
+xkcd_random_url = "https://xkcd.com/{random_comic_number}/info.0.json"
 
 
-def get_xkcd_json():
+def get_xkcd_json(xkcd_url):
     # Make the request.
     response = requests.get(xkcd_url)
 
@@ -70,8 +76,14 @@ def get_xkcd_download_folder():
 
 
 def main():
+    # Random flag.
+    if '-r' in sys.argv or '--random' in sys.argv:
+        url = xkcd_random_url.format(random_comic_number = random.randint(1,xkcd_comic_count))
+    else:
+        url = xkcd_url
+
     # Get the JSON from the xkcd website
-    xkcd_json = get_xkcd_json()
+    xkcd_json = get_xkcd_json(url)
 
     # Extract the image url and file name with which the image should be saved.
     image_url = xkcd_json['img']
@@ -85,8 +97,6 @@ def main():
     download_image(image_url, file_uri)
 
     open_image(file_uri)
-
-    print("RAN TO COMPLETION!")
 
 
 if __name__ == '__main__':
